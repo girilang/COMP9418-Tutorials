@@ -29,6 +29,7 @@ class Factor:
             self.table = table
             
         self.outcomeSpace = copy.copy(outcomeSpace)
+        self.withKey = True
     
     def __getitem__(self, outcomes):
         '''
@@ -55,8 +56,16 @@ class Factor:
         self.table[indices] = new_value
             
     def __iter__(self):
-        for x in np.nditer(self.table):
-            yield x
+        outcomeSpaces = [self.outcomeSpace[var] for var in self.domain]
+        for key in product(*outcomeSpaces):
+            if self.withKey:
+                yield self[key], list(key)
+            else:
+                yield self[key]
+
+    def __call__(self, withKey = True):
+        self.withKey = withKey
+        return self
 
     def join(self, other):
         '''
@@ -188,6 +197,33 @@ class Factor:
         for key in product(*outcomeSpaces):
             row = list(key)
             row.append(self[key])
+            table.append(row)
+        header = list(self.domain) + ['Pr']
+        return tabulate(table, headers=header, tablefmt='fancy_grid') + '\n'
+
+    def __str__(self):
+        '''
+        This function determines the string representation of this object.
+        This function will be called whenever you print out this object, i.e., print(a_prob)
+        '''
+        table = []
+        outcomeSpaces = [self.outcomeSpace[var] for var in self.domain]
+        for key in product(*outcomeSpaces):
+            row = list(key)
+            row.append(self[key])
+            table.append(row)
+        header = list(self.domain) + ['Pr']
+        return tabulate(table, headers=header, tablefmt='fancy_grid') + '\n'
+
+    def __str__(self):
+        '''
+        This function determines the string representation of this object.
+        This function will be called whenever you print out this object, i.e., print(a_prob)
+        '''
+        table = []
+        for value, key in self:
+            row = key
+            row.append(value)
             table.append(row)
         header = list(self.domain) + ['Pr']
         return tabulate(table, headers=header, tablefmt='fancy_grid') + '\n'
