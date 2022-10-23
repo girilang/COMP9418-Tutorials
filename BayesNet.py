@@ -72,8 +72,10 @@ class BayesNet():
         `q_evi`, dictionary of evidence in the form of variables names and values
 
         Returns a new NORMALIZED factor will all hidden variables eliminated as evidence set as in q_evi
-        """     
-        assert isinstance(q_vars,list) or isinstance(q_vars,tuple), "q_vars should be a list"
+        """
+        
+        if not (isinstance(q_vars,list) or isinstance(q_vars,tuple)): 
+            q_vars = (q_vars,)
         
         f = self.joint()
         
@@ -85,3 +87,4 @@ class BayesNet():
             if var not in q_vars and var not in list(q_evi):
                 f = f.marginalize(var)
         return f.normalize()
+

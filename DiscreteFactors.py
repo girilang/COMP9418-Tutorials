@@ -43,8 +43,11 @@ class Factor:
             outcomes = (outcomes,)
             
         # convert outcomes into array indicies
-        indices = tuple(self.outcomeSpace[var].index(outcomes[i]) for i, var in enumerate(self.domain))
-        return self.table[indices]
+        try:
+            indices = tuple(self.outcomeSpace[var].index(outcomes[i]) for i, var in enumerate(self.domain))
+            return self.table[indices]
+        except:
+            return 0.0
     
     def __setitem__(self, outcomes, new_value):
         '''
@@ -187,20 +190,6 @@ class Factor:
         '''
         return self.join(other)
             
-    def __str__(self):
-        '''
-        This function determines the string representation of this object.
-        This function will be called whenever you print out this object, i.e., print(a_prob)
-        '''
-        table = []
-        outcomeSpaces = [self.outcomeSpace[var] for var in self.domain]
-        for key in product(*outcomeSpaces):
-            row = list(key)
-            row.append(self[key])
-            table.append(row)
-        header = list(self.domain) + ['Pr']
-        return tabulate(table, headers=header, tablefmt='fancy_grid') + '\n'
-
     def __str__(self):
         '''
         This function determines the string representation of this object.
