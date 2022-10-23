@@ -10,6 +10,17 @@ from DiscreteFactors import Factor
 from Graph import Graph 
 from BayesNet import BayesNet 
 
+def factorError(f1, f2):
+    """
+    argument 
+    `f1`, factor with the current state probability distribution in the chain.
+    `f2`, factor with the previous state probability distribution in the chain.
+    
+    Returns absolute error between f1 and f2. 
+    """
+    assert f1.domain == f2.domain
+    return np.sum(np.abs(f1.table - f2.table))
+
 class MarkovModel():
     def __init__(self, start_state, transition, variable_remap):
         '''
