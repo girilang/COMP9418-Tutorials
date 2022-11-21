@@ -16,6 +16,7 @@ def allEqualThisIndex(dict_of_arrays, **fixed_vars):
         index = index & (np.asarray(dict_of_arrays[var_name])==var_val)
     return index
 
+
 def estimateFactor(data, var_name, parent_names, outcomeSpace):
     var_outcomes = outcomeSpace[var_name]
     parent_outcomes = [outcomeSpace[var] for var in (parent_names)]
@@ -27,9 +28,16 @@ def estimateFactor(data, var_name, parent_names, outcomeSpace):
     for i, parent_combination in enumerate(all_parent_combinations):
         parent_vars = dict(zip(parent_names, parent_combination))
         parent_index = allEqualThisIndex(data, **parent_vars)
+        nan_index = np.logical_not(np.isnan(np.asarray(data[var_name])))
         for var_outcome in var_outcomes:
             var_index = (np.asarray(data[var_name])==var_outcome)
-            f[tuple(list(parent_combination)+[var_outcome])] = (var_index & parent_index).sum()/parent_index.sum()
+            sum_var = var_index.sum()
+            sum_parent = parent_index.sum()
+            sum_non_nan = nan_index.sum()
+            sum_num_without = (var_index & parent_index).sum()
+            numerator = (var_index & parent_index & nan_index).sum()
+            denominator = (parent_index & nan_index).sum()
+            f[tuple(list(parent_combination)+[var_outcome])] = (var_index & parent_index & nan_index).sum()/(parent_index & nan_index).sum()
             
     return f
 
